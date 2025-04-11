@@ -1,0 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+
+@import 'tailwindcss';
+
+@theme {
+    --font-nunitoSans: 'Nunito Sans', sans-serif;
+
+    --color-baby-powder: #f9faf5;
+    --color-seasalt: #f8f9fa;
+
+    --color-primary-10: #e4f2eb;
+    --color-primary-15: #daede4;
+    --color-primary-20: #cae5d8;
+    --color-primary-40: #9bccb4;
+    --color-primary-60: #72b292;
+    --color-primary-80: #509974;
+    --color-primary-100: #338059;
+    --color-primary-120: #1d6641;
+    --color-primary-140: #0c4d2c;
+    --color-primary-160: #02331b;
+
+    --color-gray-15: #0f0f0f;
+    --color-gray-30: #1e1e1e;
+    --color-gray-45: #2d2d2d;
+    --color-gray-60: #3c3c3c;
+    --color-gray-75: #4b4b4b;
+    --color-gray-90: #5a5a5a;
+    --color-gray-105: #696969;
+    --color-gray-120: #787878;
+    --color-gray-135: #878787;
+    --color-gray-150: #969696;
+    --color-gray-165: #a5a5a5;
+    --color-gray-180: #b4b4b4;
+    --color-gray-195: #c3c3c3;
+    --color-gray-210: #d2d2d2;
+    --color-gray-225: #e1e1e1;
+    --color-gray-230: #e7e7e7;
+    --color-gray-240: #f0f0f0;
+    --color-gray-248: #f8f8f8;
+
+    --color-error: #d83148;
+    --color-error-light: #ec98a4;
+}
