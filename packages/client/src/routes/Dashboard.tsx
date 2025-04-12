@@ -1,7 +1,9 @@
 import { createRoute, useNavigate } from '@tanstack/react-router'
 import { authenticatedRoute } from '.'
 import { authApi } from '../api/auth'
-import { motion } from 'framer-motion'
+import { NavigationBar } from '../components/NavigationBar'
+import UploadSection from '../components/UploadSection'
+import PastUploads from '../components/PastUploadsPreview'
 
 export const dashboardRoute = createRoute({
     getParentRoute: () => authenticatedRoute,
@@ -12,26 +14,25 @@ export const dashboardRoute = createRoute({
 function Dashboard() {
     const logout = authApi.useLogout()
     const navigate = useNavigate()
-
+  
     return (
-        <div className='w-screen h-screen bg-baby-powder flex items-center justify-center'>
-            <motion.button
-                className='font-nunitoSans text-white text-md font-semibold flex flex-row px-8 items-center justify-center rounded-full py-4 hover:cursor-pointer'
-                initial={{ backgroundColor: 'var(--color-primary-100)' }}
-                animate={{ backgroundColor: 'var(--color-primary-100)' }}
-                whileHover={{ backgroundColor: 'var(--color-primary-120)' }}
-                transition={{ duration: 0.1 }}
-                onClick={() => {
-                    logout.mutate(undefined, {
-                        onSuccess: () => {
-                            navigate({ to: '/login' })
-                        }
-                    })
-                }}
-                disabled={logout.isPending}
-            >
-                Log out
-            </motion.button>
+      <div className="w-screen h-screen bg-baby-powder font-nunitoSans">
+        <NavigationBar
+          userName="garden" // change to get from auth
+          onLogout={() =>
+            logout.mutate(undefined, {
+              onSuccess: () => navigate({ to: '/login' })
+            })
+          }
+          isLoggingOut={logout.isPending}
+        />
+        <div className="flex flex-col gap-8 px-8 py-6">
+            {/* Section 1: Upload new file */}
+            <UploadSection />
+
+            {/* Section 2: View past uploads */}
+            <PastUploads />
         </div>
-    )
-}
+      </div>
+    );
+  }

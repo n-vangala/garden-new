@@ -2,6 +2,7 @@ import { createRootRoute, createRoute, createRouter, redirect } from '@tanstack/
 import { AuthenticationWrapper } from '../components/AuthenticationWrapper'
 import { dashboardRoute } from './Dashboard'
 import { loginRoute } from './Login'
+import { uploadsRoute } from './Uploads'
 
 export const rootRoute = createRootRoute()
 export const authenticatedRoute = createRoute({
@@ -18,7 +19,14 @@ const catchAllRoute = createRoute({
 })
 
 export const router = createRouter({
-    routeTree: rootRoute.addChildren([loginRoute, authenticatedRoute.addChildren([dashboardRoute]), catchAllRoute])
+    routeTree: rootRoute.addChildren([
+        loginRoute,
+        authenticatedRoute.addChildren([
+            dashboardRoute,
+            uploadsRoute
+        ]),
+        catchAllRoute
+    ])
 })
 
 declare module '@tanstack/react-router' {
