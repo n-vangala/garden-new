@@ -162,4 +162,36 @@ uploadsRouter.get('/:id', (req: Request, res: Response): void => {
                 error: 'Failed to retrieve file information'
             });
         });
-}); 
+});
+
+uploadsRouter.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Find the file metadata in the database by its ID.
+      const fileDoc = await FileModel.findById(req.params.id);
+      if (!fileDoc) {
+        res.status(StatusCodes.NOT_FOUND).json({ error: 'File not found' });
+        return;
+      }
+  
+      // Attempt to delete the physical file from disk.
+      try {
+        await fs.unlink(fileDoc.path);
+      } catch (fsError: any) {
+        // If the error is ENOENT (file not found), log a warning and continue.
+        if (fsError.code === 'ENOENT') {
+          console.warn(`File at ${fileDoc.path} not found on disk; proceeding with metadata deletion.`);
+        } else {
+          console.error('Error deleting file from disk:', fsError);
+          res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to delete file from disk.' });
+          return;
+        }
+      }
+  
+      // Delete the file metadata from MongoDB.
+      await FileModel.deleteOne({ _id: fileDoc._id });
+      res.json({ message: 'File deleted successfully.' });
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Failed to delete file.' });
+    }
+  });
