@@ -3,6 +3,7 @@ import { AuthenticationWrapper } from '../components/AuthenticationWrapper'
 import { dashboardRoute } from './Dashboard'
 import { loginRoute } from './Login'
 import { uploadsRoute } from './Uploads'
+import { uploadDetailsRoute } from './UploadDetails'
 
 export const rootRoute = createRootRoute()
 export const authenticatedRoute = createRoute({
@@ -23,7 +24,8 @@ export const router = createRouter({
         loginRoute,
         authenticatedRoute.addChildren([
             dashboardRoute,
-            uploadsRoute
+            uploadsRoute,
+            uploadDetailsRoute
         ]),
         catchAllRoute
     ])

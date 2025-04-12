@@ -1,5 +1,5 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { NavigationBar } from '../components/NavigationBar';
 import { useNavigate } from '@tanstack/react-router';
 import { authApi } from '../api/auth';
@@ -13,6 +13,7 @@ interface UploadEntry {
 }
 
 const PastUploadsPage: React.FC = () => {
+  const queryClient = useQueryClient();
   const { data: uploads = [], isLoading } = useQuery<UploadEntry[]>({
     queryKey: ['uploads'],
     queryFn: async () => {
@@ -22,6 +23,10 @@ const PastUploadsPage: React.FC = () => {
     },
   });
 
+  const navigate = useNavigate();
+  const logout = authApi.useLogout();
+
+  // Group uploads by their upload date (using locale date string)
   const groupByDate = (uploads: UploadEntry[]) => {
     return uploads.reduce((groups, upload) => {
       const date = new Date(upload.uploadedAt).toLocaleDateString();
@@ -32,18 +37,34 @@ const PastUploadsPage: React.FC = () => {
     }, {} as Record<string, UploadEntry[]>);
   };
 
-  // Auth handling - same as Dashboard
-  const logout = authApi.useLogout();
-  const navigate = useNavigate();
+  // Delete function: call the DELETE API endpoint
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this file?')) return;
+    try {
+      const res = await fetch(`/api/uploads/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(`Delete failed: ${errorData.error || 'Unknown error'}`);
+      } else {
+        // Invalidate the uploads query to refetch updated data
+        queryClient.invalidateQueries({ queryKey: ['uploads'] });
+      }
+    } catch (error) {
+      console.error('Error deleting upload:', error);
+      alert('Error during deletion.');
+    }
+  };
 
   return (
     <div className="w-screen h-screen bg-baby-powder font-nunitoSans">
       {/* Navigation Bar */}
       <NavigationBar
-        userName="garden" // Same as Dashboard
+        userName="garden" // Change to dynamic auth value later
         onLogout={() =>
           logout.mutate(undefined, {
-            onSuccess: () => navigate({ to: '/login' })
+            onSuccess: () => navigate({ to: '/login' }),
           })
         }
         isLoggingOut={logout.isPending}
@@ -99,10 +120,17 @@ const PastUploadsPage: React.FC = () => {
                               {upload.status.charAt(0).toUpperCase() + upload.status.slice(1)}
                             </span>
                             <button
-                              className="text-primary-100 hover:text-primary-120 font-medium"
-                              onClick={() => {/* TODO: Implement view details */}}
-                            >
+                                className="text-primary-100 hover:text-primary-120 font-medium text-sm"
+                                onClick={() => navigate({ to: `/uploads/${upload.id}`, replace: true })}
+                                >
                               View Details
+                            </button>
+                            <button
+                              className="text-red-500 hover:underline text-sm font-medium"
+                              onClick={() => handleDelete(upload.id)}
+                              title="Delete"
+                            >
+                              Delete
                             </button>
                           </div>
                         </div>
@@ -127,4 +155,4 @@ const PastUploadsPage: React.FC = () => {
   );
 };
 
-export default PastUploadsPage; 
+export default PastUploadsPage;
